@@ -2,12 +2,10 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import "./style.css";
 import { useDispatch } from "react-redux";
-import { add } from "../store/cartSlice";
+import { addMultipleItems } from "../store/cartSlice";
 import { addToCartNotify } from "./Tostify/Tostify";
 import TostifyContainer from "./Tostify/TostifyContainer";
 import { Link } from "react-router-dom";
-// import Price from "./Price";
-// import Checkout from "./Checkout/Checkout";
 
 const ShoppingCarts = () => {
   const dispatch = useDispatch();
@@ -24,9 +22,15 @@ const ShoppingCarts = () => {
     setData(res.data.products);
   };
   const handleAdd = (product) => {
-    dispatch(add(product));
+    dispatch(
+      addMultipleItems({
+        product,
+        id: product.id,
+        quantity: 1,
+        price: product.price,
+      })
+    );
     addToCartNotify();
-    console.log(product);
   };
 
   // pagination
@@ -112,8 +116,6 @@ const ShoppingCarts = () => {
             </ul>
           </div>
           <TostifyContainer />
-          {/* <Price /> */}
-          {/* <Checkout name={data.name} /> */}
         </div>
       )}
     </>

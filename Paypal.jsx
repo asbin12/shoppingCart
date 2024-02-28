@@ -54,7 +54,8 @@ import { useEffect, useRef } from "react";
 import { successfulCheckout } from "./src/components/Tostify/Tostify";
 import TostifyContainer from "./src/components/Tostify/TostifyContainer";
 
-const Paypal = (rate) => {
+const Paypal = ({ rate }) => {
+  console.log("rate from paypal", rate);
   useEffect(() => {
     window.paypal
       .Buttons({
@@ -87,16 +88,8 @@ const Paypal = (rate) => {
   return (
     <div>
       <div id="paypal__content" />
-      <div className="form__input--section">
-        {/* <button
-          className={"button__blue button__style paypal__button"}
-          value="submit"
-          onClick={() => setPaypalClick(true)}
-        >
-          Login
-        </button> */}
-        <TostifyContainer />
-      </div>
+
+      <TostifyContainer />
     </div>
   );
 };

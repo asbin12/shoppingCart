@@ -1,77 +1,65 @@
-import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Paypal from "../../../Paypal";
+import { updateQuantity } from "../../store/cartSlice";
 
-const Checkout = ({ uniqueProducts }) => {
-  const [counters, setCounters] = useState({});
-  const [overallPrices, setOverallPrices] = useState(0);
+const Checkout = () => {
+  const quantity = useSelector((state) => state.cart);
+  const dispatch = useDispatch();
 
+  let sum = 0;
+   quantity.map((item) => (sum = sum + item.totalPrice));
 
-  useEffect(() => {
-    const initialCounters = {};
-    let totalPrices = 0;
-
-    uniqueProducts.forEach((item) => {
-      initialCounters[item.id] = item.quantity;
-      totalPrices += item.price * item.quantity;
-    });
-
-    setCounters(initialCounters);
-    setOverallPrices(totalPrices);
-  }, [uniqueProducts]);
-
-  const handleCounterAdd = (productId) => {
-    setCounters((prevCounters) => ({
-      ...prevCounters,
-      [productId]: prevCounters[productId] + 1,
-    }));
+  const handleCounterAdd = (productId, currentQuantity) => {
+    console.log(productId, currentQuantity);
+    dispatch(updateQuantity({ productId, quantity: currentQuantity + 1 }));
   };
 
-  const handleCounterSub = (productId) => {
-    setCounters((prevCounters) => ({
-      ...prevCounters,
-      [productId]: Math.max(prevCounters[productId] - 1, 1),
-    }));
+  const handleCounterSub = (productId, currentQuantity) => {
+    if (currentQuantity > 1) {
+      dispatch(updateQuantity({ productId, quantity: currentQuantity - 1 }));
+    }
   };
-
-  0;
 
   return (
     <div className="checkout-box-wrapper">
       <div className="checkout-box">
-        {uniqueProducts?.map((product) => (
-          <div key={product.id} className="checkout__content">
-            <p className="product__name">Product: {product.title}</p>
+        {quantity?.map((product, i) => (
+          <div key={product.id || i} className="checkout__content">
+            <p className="product__name">Product: {product.product.title}</p>
 
-            <p className="button__wrapper">
+            <div className="button__wrapper">
               <button
                 className=" btn-circle"
-                onClick={() => handleCounterAdd(product.id)}
+                onClick={() =>
+                  handleCounterAdd(product.product.id, product.quantity)
+                }
               >
                 +
               </button>
-              {counters[product.id]}
+
+              <p> {product.quantity}</p>
+
               <button
                 className=" btn-circle"
-                onClick={() => handleCounterSub(product.id)}
+                onClick={() =>
+                  handleCounterSub(product.product.id, product.quantity)
+                }
               >
                 -
               </button>
-            </p>
+            </div>
 
-            <p className="checkout__price">Price: {product.price}</p>
+            <p className="checkout__price">Price: {product.product.price}</p>
             <p className="checkout__price">
-              Total price of product:{product.price * counters[product.id]}
+              Total price of product:{product.totalPrice}
             </p>
           </div>
         ))}
-
         <div>
-          <p className="overall__price">Overall Price:{overallPrices}</p>{" "}
+          <p>overall price is:{sum}</p>
         </div>
-        {/* <Link to={{ pathname: "paypal", state: { rate: 15 } }}>
-          <button className="btn">Checkout</button>
-        </Link> */}
-        <Paypal rate={overallPrices} />
+
+        <Paypal rate={sum} />
       </div>
     </div>
   );
