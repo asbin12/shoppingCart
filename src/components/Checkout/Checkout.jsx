@@ -6,8 +6,7 @@ const Checkout = () => {
   const quantity = useSelector((state) => state.cart);
   const dispatch = useDispatch();
 
-  let sum = 0;
-   quantity.map((item) => (sum = sum + item.totalPrice));
+  const sum = quantity.reduce((total, item) => total + item.totalPrice, 0);
 
   const handleCounterAdd = (productId, currentQuantity) => {
     console.log(productId, currentQuantity);
